@@ -140,6 +140,7 @@ height = 600
 black = (0, 0, 0)
 white = (255, 255, 255)
 red = (255, 0, 0)
+
 # list of all rectangles
 all_rect = []
 block_size = 20
@@ -147,21 +148,48 @@ for x in range(0, height, block_size):
     row = []
     for y in range(0, width, block_size):
         rect = pygame.Rect(y, x, block_size - 2, block_size - 2)
+        co = [y,x]
         if ((y == start[0] and x == start[1]) or (y == end[0] and x == end[1])):
-            row.append([rect, red])
+            row.append([rect, red, co])
         else:
-            row.append([rect, black])
+            row.append([rect, black, co])
     all_rect.append(row)
 
 
 draw_grid(screen, width, height)
 start_end(screen, start)
 start_end(screen, end)
-
 pygame.display.update()
 
+#obstacles
+obstacles = []
+quit = False
+loop = True
+while (loop):  
+    for event in pygame.event.get():
+        if pygame.mouse.get_pressed()[0]:
+            for row in all_rect:
+                for box in row:
+                    rec, color, co = box
+                    pos = pygame.mouse.get_pos()
+                    if rec.collidepoint(pos):
+                        if color == black:
+                            box[1] = white
+                            obstacles.append(co)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                loop = False
+                break
 
+    for row in all_rect:
+        for box in row:
+            rec, color, co = box
+            pygame.draw.rect(screen, color, rec, 0)
+    
+    pygame.display.update()
 
+print(obstacles)
+#filling the visted boxes
 while not frontier.empty():
     current = frontier.get()
 
@@ -180,9 +208,10 @@ while not frontier.empty():
         pygame.time.wait(5)
         pygame.display.update()
 
+        
+#to show the shortest path
 steps = 0
 path = []
-
 while current != starting_point:
     steps = steps + 1
     shortest_path(screen, current)
@@ -196,33 +225,15 @@ path.reverse()
 print(path)
 print(steps)
         
-
+#to quit the screen
 quit = False
 loop = True
-
 while (loop):  
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             loop = False
             quit = True
-        if pygame.mouse.get_pressed()[0]:
-            for row in all_rect:
-                for box in row:
-                    rec, color = box
-                    pos = pygame.mouse.get_pos()
-                    if rec.collidepoint(pos):
-                        if color == black:
-                            box[1] = white
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                loop = False
-                break
 
-#     for row in all_rect:
-#         for box in row:
-#             rec, color = box
-#             pygame.draw.rect(screen, color, rec, 0)
-    
     pygame.display.update()
 if quit:
     pygame.quit()
