@@ -8,29 +8,48 @@ import pygame
 pygame.init()
 screen = pygame.display.set_mode((600, 600))
 
+
 def ok_button():
     window1.destroy()
 
 
 window1 = Tk()
 t = IntVar()
-lb1 = tk.Label(window1, text=("Grid-Size : 30 X 30"),font = ("Verdana", 12))
+lb1 = tk.Label(window1, text=("Grid-Size : 30 X 30"), font=("Verdana", 12))
 lb1.place(x=40, y=60)
-l1 = tk.Button(window1, text='Ok', command = ok_button)
-l1.place(x = 100,y =100)
+l1 = tk.Button(window1, text='Ok', command=ok_button)
+l1.place(x=100, y=100)
 window1.title('Successfully Executed')
 window1.geometry("400x200+10+20")
 window1.mainloop()
 
 
-
 def show():
     messagebox.showinfo("Submit", "Submit")
     print("start(x):%s\n start(y):%s\n end(x):%s\n end(y):%s \n checkbox:%d" % (
-    e1.get(), e2.get(), e3.get(), e4.get(), var.get()))
+        e1.get(), e2.get(), e3.get(), e4.get(), var.get()))
     global vinay_list
+    global show_steps
+    show_steps = var.get()
     vinay_list = [e1.get(), e2.get(), e3.get(), e4.get()]
+
     master.destroy()
+
+def timePass():
+    Rules.destroy()
+
+
+Rules = Tk()
+t = IntVar()
+lb1 = tk.Label(Rules, text=("Left click for Obstacles"), font=("Verdana", 12))
+lb1.place(x=40, y=60)
+lb2 = tk.Label(Rules, text=("Press Space bar to run the Algorithm"), font=("Verdana", 12))
+lb2.place(x=40, y=80)
+l1 = tk.Button(Rules, text='Ok', command=timePass)
+l1.place(x=100, y=120)
+Rules.title('Rules')
+Rules.geometry("400x200+10+20")
+Rules.mainloop()
 
 
 master = tk.Tk()
@@ -58,6 +77,8 @@ tk.Button(master, text='Submit', command=show).grid(row=5, column=1, sticky=tk.W
 # tk.Button(master, text='Quit',command=master.quit).grid(row=5, column=2,sticky=W,pady=4)
 
 tk.mainloop()
+
+
 #####################
 
 ##new cell
@@ -86,13 +107,13 @@ def neighbors(node):
 
 def visited_rect(screen, coordinates):
     green = (0, 255, 0)
-    rect = pygame.Rect(coordinates[0]*20, coordinates[1]*20, 19, 19)
+    rect = pygame.Rect(coordinates[0] * 20, coordinates[1] * 20, 19, 19)
     pygame.draw.rect(screen, green, rect, 0)
 
 
 def shortest_path(screen, coordinates):
     blue = (0, 0, 255)
-    rect = pygame.Rect(coordinates[0]*20, coordinates[1]*20, 19, 19)
+    rect = pygame.Rect(coordinates[0] * 20, coordinates[1] * 20, 19, 19)
     pygame.draw.rect(screen, blue, rect, 0)
 
 
@@ -109,6 +130,7 @@ def start_end(screen, coordinates):
     rect = pygame.Rect(coordinates[0], coordinates[1], 19, 19)
     pygame.draw.rect(screen, red, rect, 0)
 
+
 print(vinay_list)
 # X, Y = input("enter the dimensions of Grid:").split()
 # X = int(X)
@@ -121,7 +143,7 @@ for i in range(30):
         nodes.append([i, j])
         cost_so_far.update({i: {j: 0}})
         came_from.update({i: {j: None}})
-        
+
 start_X, start_Y = int(vinay_list[0]), int(vinay_list[1])
 starting_point = [start_X, start_Y]
 goal_X, goal_Y = int(vinay_list[2]), int(vinay_list[3])
@@ -131,9 +153,9 @@ frontier.put(starting_point, 0)
 came_from.update({starting_point[0]: {starting_point[1]: starting_point}})
 cost_so_far.update({starting_point[0]: {starting_point[1]: 0}})
 
-start = [start_X*20, start_Y*20] #input
-end = [goal_X*20, goal_Y*20]
-print(start, end) 
+start = [start_X * 20, start_Y * 20]  # input
+end = [goal_X * 20, goal_Y * 20]
+print(start, end)
 width = 600
 height = 600
 
@@ -148,24 +170,23 @@ for x in range(0, height, block_size):
     row = []
     for y in range(0, width, block_size):
         rect = pygame.Rect(y, x, block_size - 2, block_size - 2)
-        co = [y,x]
+        co = [y/20, x/20]
         if ((y == start[0] and x == start[1]) or (y == end[0] and x == end[1])):
             row.append([rect, red, co])
         else:
             row.append([rect, black, co])
     all_rect.append(row)
 
-
 draw_grid(screen, width, height)
 start_end(screen, start)
 start_end(screen, end)
 pygame.display.update()
 
-#obstacles
+# obstacles
 obstacles = []
 quit = False
 loop = True
-while (loop):  
+while (loop):
     for event in pygame.event.get():
         if pygame.mouse.get_pressed()[0]:
             for row in all_rect:
@@ -185,11 +206,11 @@ while (loop):
         for box in row:
             rec, color, co = box
             pygame.draw.rect(screen, color, rec, 0)
-    
+
     pygame.display.update()
 
 print(obstacles)
-#filling the visted boxes
+# filling the visted boxes
 while not frontier.empty():
     current = frontier.get()
 
@@ -197,38 +218,43 @@ while not frontier.empty():
         break
 
     for child in neighbors(current):
-        visited_rect(screen, child)
-        new_cost = cost_so_far[current[0]][current[1]] + 1
-        index = child[0] not in cost_so_far or child[1] not in cost_so_far[child[0]]
-        if index is True or new_cost < cost_so_far[child[0]][child[1]]:
-            cost_so_far[child[0]].update({child[1]: new_cost})
-            priority = new_cost + heuristic(goal, child)
-            frontier.put(child, priority)
-            came_from[child[0]].update({child[1]: current})
-        pygame.time.wait(5)
-        pygame.display.update()
+        if child not in obstacles:
+            if child != [start_X,start_Y] and child != [goal_X,goal_Y] and show_steps != 0:
+                visited_rect(screen, child)
+            new_cost = cost_so_far[current[0]][current[1]] + 1
+            index = child[0] not in cost_so_far or child[1] not in cost_so_far[child[0]]
+            if index is True or new_cost < cost_so_far[child[0]][child[1]]:
+                cost_so_far[child[0]].update({child[1]: new_cost})
+                priority = new_cost + heuristic(goal, child)
+                frontier.put(child, priority)
+                came_from[child[0]].update({child[1]: current})
+            if show_steps != 0:
+                pygame.time.wait(5)
+            pygame.display.update()
+        else:
+            pass
 
-        
-#to show the shortest path
+# to show the shortest path
 steps = 0
 path = []
-while current != starting_point:
-    steps = steps + 1
-    shortest_path(screen, current)
-    path.append(current)
-    current = came_from[current[0]][current[1]]
-    pygame.time.wait(25)
-    pygame.display.update()
-shortest_path(screen,starting_point)
-path.append(starting_point)
-path.reverse()
+if current == goal:
+    while current != starting_point:
+        steps = steps + 1
+        if current != goal:
+            shortest_path(screen, current)
+        path.append(current)
+        current = came_from[current[0]][current[1]]
+        pygame.time.wait(25)
+        pygame.display.update()
+    path.append(starting_point)
+    path.reverse()
 print(path)
 print(steps)
-        
-#to quit the screen
+
+# to quit the screen
 quit = False
 loop = True
-while (loop):  
+while (loop):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             loop = False
@@ -238,13 +264,14 @@ while (loop):
 if quit:
     pygame.quit()
 
-#for number of steps(displaying)
+# for number of steps(displaying)
 from tkinter import *
 from tkinter import messagebox
 
 window2 = Tk()
 t = IntVar()
-lb1 = tk.Label(window2, text=("Program Finished.\nThe shortest distance is %d blocks away "%steps),font = ("Verdana", 12))
+lb1 = tk.Label(window2, text=("Program Finished.\nThe shortest distance is %d blocks away " % steps),
+               font=("Verdana", 12))
 lb1.place(x=40, y=60)
 window2.title('Successfully Executed')
 window2.geometry("400x200+10+20")
