@@ -6,5 +6,5 @@ This python project gives a visualization of the A* path finding algorithm using
 - TKinter
 - Pygame
 
-# demo
-- https://drive.google.com/file/d/1fj7rkUSC1um3elYMp5Hnk0DX6UE5zU3-/view?usp=sharing
+# Demo
+- https://drive.google.com/file/d/1fkWk5non9zl17c1ISLRHE3CJykNM9hva/view?usp=sharing
