@@ -8,3 +8,6 @@ This python project gives a visualization of the A* path finding algorithm using
 
 # Demo
 - https://drive.google.com/file/d/1fkWk5non9zl17c1ISLRHE3CJykNM9hva/view?usp=sharing
+
+# GIF
+![](https://github.com/A-star-python-project/Code/blob/master/assets/Astar-mini.gif)
